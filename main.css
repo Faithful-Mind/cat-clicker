@@ -1,0 +1,25 @@
+body {
+    position: float;
+}
+
+nav {
+    float: left;
+}
+
+.cat-detail {
+    float: right;
+    /* width: 70%; */
+    /* margin: 0 auto; */
+}
+
+.catbox figcaption {
+    text-align: center;
+}
+
+.catbox .img {
+    text-align:center;
+}
+
+.catbox p {
+    text-align:center;
+}
