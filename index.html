@@ -11,7 +11,15 @@
 <nav>
   <ul class="cats-list"></ul>
 </nav>
-<section class="cat-detail"></section>
+<section class="cat-detail">
+  <div id="cat-curr" class="catbox">
+    <figure>
+      <figcaption><span class="click-count">{{currentCat.name}}</span></figcaption>
+      <div class='img'><img class="cat-pic" src="{{currentCat.src}}" alt="cat pic 2" /></div>
+    </figure>
+    <p>You have clicked <span class="number">{{currentCat.clickCount}}</span> times</p>
+  </div>
+</section>
 <script src="main.js"></script>
 </body>
 </html>

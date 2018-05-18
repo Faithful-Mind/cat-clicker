@@ -17,7 +17,13 @@ var model = {
       src: 'https://lh5.ggpht.com/LfjkdmOKkGLvCt-VuRlWGjAjXqTBrPjRsokTNKBtCh8IFPRetGaXIpTQGE2e7ZCUaG2azKNkz38KkbM_emA=s0#w=640&h=454',
       clickCount: 0,
       visible: false,
-    }
+    },
+    {
+      name: 'Happy orange tabby cat',
+      src: 'https://lh4.ggpht.com/dUJNejPqb_qLsV1kfWcvviqc7adxsw02BSAm8YLWNklP4lI6fQCLKXd-28uKuchtjoEUpqFN0K6kkTSDHw=s0#w=588&h=640',
+      clickCount: 0,
+      visible: false,
+    },
   ],
 
   init() {
@@ -30,56 +36,61 @@ var model = {
 
   getVisibleCats() {
     return this.cats.filter(cat => cat.visible);
-  }
+  },
 };
 
-var view = {
-
-  init(octo) {
-    this.octo = octo;
-    this.renderNavbar();
-    view.renderDetails(true); // for not triggering clearing on initialization
+var navView = {
+  init() {
+    this._render();
   },
+  
+  _render() {
+    octopus.getAllCats().forEach((cat, index) => {
+      var anchor = document.createElement('a');
+      anchor.id = 'cat-' + index;
+      anchor.href = 'javascript: void(0);'
+      anchor.textContent = cat.name;
 
-  renderNavbar() {
-    this.octo.getAllCats().forEach((cat, index) => {
+      var listItem = document.createElement('li');
+      listItem.appendChild(anchor);
+
+      listItem.addEventListener('click', function() {
+        octopus.switchCurrentCat(index); // closes on index
+      });
+
       var navList = document.querySelector('nav ul.cats-list');
-      navList.insertAdjacentHTML('beforeend',
-        `<li><a id='cat-${index}' href="javascript: void(0);">${cat.name}</a></li>`);
-      document.querySelector(`#cat-${index}`).addEventListener('click',
-        function() { this.octo.switchCurrentCat(index); }.bind(this) // closes on index
-      );
+      navList.appendChild(listItem);
     });
   },
 
-  renderDetails(init = false) {
+};
+
+var detailsView = {
+
+  init() {
     var detailBox = document.querySelector('section.cat-detail');
-    var currentCat = this.octo.getCurrentCat();
+    this.currNameSpan = detailBox.querySelector('#cat-curr figcaption > span.click-count');
+    this.currImg = detailBox.querySelector(`#cat-curr img.cat-pic`);
+    this.clickCountSpan = detailBox.querySelector(`#cat-curr span.number`);
 
-    // not triggering on initialization (passed a true value)
-    if (!init) {
-      // clear current cat's details
-      detailBox.removeChild(detailBox.querySelector('#cat-curr'));
-    }
-    
-    if (currentCat) {
-      detailBox.insertAdjacentHTML('beforeend',
-        `<div id="cat-curr" class="catbox">
-        <figure>
-          <figcaption><span>${currentCat.name}</span></figcaption>
-          <div class='img'><img class="cat-pic" src="${currentCat.src}" alt="cat pic 2" /></div>
-        </figure>
-        <p>You have clicked <span class="number">${currentCat.clickCount}</span> times</p>
-      </div>`);
+    this.render();
 
-      detailBox.querySelector(`#cat-curr img.cat-pic`).addEventListener('click', this._countClick.bind(this));
-    }
+    document.querySelector(`section.cat-detail #cat-curr img.cat-pic`).addEventListener('click', this._countsClick);
   },
 
-  _countClick() {
-    this.octo.getCurrentCat().clickCount++;
-    document.querySelector(`#cat-curr span.number`).textContent = this.octo.getCurrentCat().clickCount;
-  }
+
+  render() {
+    var currentCat = octopus.getCurrentCat();
+
+    this.currNameSpan.textContent = currentCat.name;
+    this.currImg.src = currentCat.src;
+    this.clickCountSpan.textContent = currentCat.clickCount;
+  },
+
+  _countsClick() {
+    octopus.getCurrentCat().clickCount++;
+    document.querySelector(`#cat-curr span.number`).textContent = octopus.getCurrentCat().clickCount;
+  },
 
 };
 
@@ -87,7 +98,8 @@ var octopus = {
 
   init() {
     model.init();
-    view.init(this);
+    navView.init();
+    detailsView.init();
   },
 
   getAllCats() {
@@ -104,8 +116,8 @@ var octopus = {
       cat.visible = false;
     });
     model.getAllCats()[index].visible = true;
-    view.renderDetails();
-  }
+    detailsView.render();
+  },
 
 };
 
