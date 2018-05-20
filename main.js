@@ -24,6 +24,12 @@ var model = {
       clickCount: 0,
       visible: false,
     },
+    {
+      name: 'Midge cat and computer',
+      src: 'https://lh3.ggpht.com/cesD31eroFxIZ4IEeXPAJkx_8i5-haU3P9LQosGNfV-GfAPUh2bE4iw4zV6Mc9XobWOR70BQh2JAP57wZlM=s0#w=640&h=480',
+      clickCount: 0,
+      visible: false,
+    },
   ],
 
   init() {
@@ -31,11 +37,20 @@ var model = {
   },
 
   getAllCats() {
-    return this.cats;
+    return this.cats.map(cat => new Proxy(cat, this._handler));
   },
 
   getVisibleCats() {
     return this.cats.filter(cat => cat.visible);
+  },
+
+  _handler: {
+    get: function(obj, prop){
+      return obj[prop];
+    },
+    set(obj, prop, value) {
+      obj[prop] = value;
+    },
   },
 };
 
